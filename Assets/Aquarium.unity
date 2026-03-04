@@ -150,11 +150,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   cam: {fileID: 476522938}
   fishPrefab: {fileID: 9044286289063983745, guid: 73211f637175e0d4ab638b157bcc47db, type: 3}
-  fishCount: 4
+  fishCount: 5
   crabPrefab: {fileID: 8569000541197058042, guid: de2b6f9919815e2498d55799615cc899, type: 3}
-  crabCount: 2
+  crabCount: 3
   jellyPrefab: {fileID: 9044286289063983745, guid: 6fa197e0b736c0546a5a8aa802a69948, type: 3}
-  jellyCount: 3
+  jellyCount: 4
   sidePadding: 2
   bottomPadding: 1
   topPadding: 1

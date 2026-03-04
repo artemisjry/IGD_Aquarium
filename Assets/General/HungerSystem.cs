@@ -56,7 +56,7 @@ public class HungerSystem : MonoBehaviour
             if (lifeCycle != null) lifeCycle.Kill();
         }
 
-        float hungryAt = dur * 0.60f;
+        float hungryAt = dur * 0.50f;
         float starvingAt = dur * 0.20f;
 
         HungerStage desired =

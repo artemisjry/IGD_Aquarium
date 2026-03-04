@@ -58,8 +58,8 @@ public class SpawnSystem : MonoBehaviour
         if (Time.time < nextSpeciesSpawnTime[layer]) return;
 
         if (hunger == null || other.hunger == null) return;
-        if (hunger.Stage != HungerSystem.HungerStage.Full) return;
-        if (other.hunger.Stage != HungerSystem.HungerStage.Full) return;
+        if (hunger.Stage == HungerSystem.HungerStage.Starving) return;
+        if (other.hunger.Stage == HungerSystem.HungerStage.Starving) return;
 
         if (life == null || other.life == null) return;
         if (life.Stage != LifeCycle.LifeStage.Adult) return;
