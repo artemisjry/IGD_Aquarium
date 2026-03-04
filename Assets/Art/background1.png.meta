@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: dbf7c4fb89e71fa4d869a23c5f93270c
+guid: 60d34b5f181f9a240aa870c0fb3a17ab
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1944796783343309695
-    second: CatScared_0
+      213: 5756380681857427472
+    second: background1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CatScared_0
+      name: background1_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 1
-        width: 22
-        height: 23
+        x: 0
+        y: 0
+        width: 480
+        height: 270
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f731087de5e4dfa10800000000000000
-      internalID: 1944796783343309695
+      spriteID: 01868064bb5c2ef40800000000000000
+      internalID: 5756380681857427472
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CatScared_0: 1944796783343309695
+      background1_0: 5756380681857427472
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

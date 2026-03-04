@@ -589,9 +589,6 @@ GameObject:
   - component: {fileID: 752935643}
   - component: {fileID: 752935646}
   - component: {fileID: 752935645}
-  - component: {fileID: 752935650}
-  - component: {fileID: 752935649}
-  - component: {fileID: 752935648}
   m_Layer: 0
   m_Name: Fish
   m_TagString: Untagged
@@ -678,58 +675,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &752935648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752935641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14122239f1b1bab4d9c54837311986f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
---- !u!114 &752935649
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752935641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ac4f612f2ca86840bdc70f2262ba159, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FishMovement
-  maxSpeed: 4.5
-  colliderBoundary: {fileID: 0}
-  UIBoundary: {fileID: 0}
-  cameraBoundary: {fileID: 519420031}
-  moveSpeed: 3
-  changeSpeed: 0.08
-  turnSharpness: 2.5
-  minDirectionHold: 1.2
-  edgePaddingWorld: 0.2
-  approachDistance: 1
-  lookAheadTime: 0.35
-  avoidStrength: 3
-  reactionSpeed: 10
-  avoidHoldTime: 0.25
-  avoidReleaseSpeed: 6
---- !u!114 &752935650
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752935641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c092ea158010994bb78723ae2cadf0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MaxSpeed
-  maxSpeed: 4.5
 --- !u!1 &1950505808
 GameObject:
   m_ObjectHideFlags: 0

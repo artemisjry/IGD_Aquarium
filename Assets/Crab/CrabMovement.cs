@@ -1,13 +1,13 @@
-//GOAL: make a "fish swimming movement" code that is adaptable across projects
 using UnityEngine;
+using UnityEngine.InputSystem.EnhancedTouch;
 
 [RequireComponent(typeof(Rigidbody2D))] //ensures that there is a RigidBody2D Component
-public class FishMovement : MonoBehaviour
+public class CrabMovement : MonoBehaviour
 {
     [Header("Movement Behavior")]
-    public float moveSpeed = 2.5f; //+Assertive movement
-    public float changeSpeed = 0.35f; //+Erratic Movement
-    public float turnSharpness = 6f; //+Sharp Turns
+    public float moveSpeed = 4f; //+Assertive movement
+    public float changeSpeed = 0.1f; //+Erratic Movement
+    public float turnSharpness = 10f; //+Sharp Turns
     public float minDirectionHold = 0.6f; //minimal length a direction is held in seconds
     HungerSystem hunger;
 
@@ -40,9 +40,6 @@ public class FishMovement : MonoBehaviour
     Vector2 move; //direction of general movement
     Vector2 avoid; //direction of avoid
 
-    float seedX; //randomize horizontal movement
-    float seedY; //randomize vertical movement
-
     float nextRetargetTime = 0f;
     Vector2 heldTargetDir;
 
@@ -55,21 +52,15 @@ public class FishMovement : MonoBehaviour
         hunger = GetComponent<HungerSystem>();
         if (avoidBoundary != null) avoidBoundary.SetIntensity(reactionSpeed, avoidHoldTime, avoidReleaseSpeed); //set parameters for avoid behavior
 
-        //randomize seed
-        //multiply by 1000 so changes in Perlin noise is actually noticable
-        seedX = Random.value * 1000f;
-        seedY = Random.value * 1000f;
-
-        move = Random.insideUnitCircle.normalized; //provides a starting point for movement
-        //insideUnitCircle picks a point in a unit circle to form a vector from the center
-        //then normalized forces its magnitude to be 1 while maintaining its direction
-        avoid = Vector2.zero; //which way the object should head to avoid boundary, starts neutral
+        move = Random.value > 0.5f ? Vector2.right : Vector2.left;
+        avoid = Vector2.zero;
 
         //initial hold direction
         heldTargetDir = move;
         nextRetargetTime = Time.time; //start timer
         RecomputeBump();
     }
+
     void RecomputeBump()
     {
         bumpImpulseAtMax = Mathf.Lerp(0.6f, 2.2f, bumpStrength);
@@ -80,8 +71,6 @@ public class FishMovement : MonoBehaviour
 
     private void FixedUpdate() //things that need to be consistent across frame rates go here
     {
-        if (lifeStage != null && lifeStage.Stage == LifeCycle.LifeStage.Dead) return;
-
         bumpSteer = Vector2.Lerp(bumpSteer, Vector2.zero, 1f - Mathf.Exp(-bumpSteerDecay * Time.fixedDeltaTime));
 
         //wander direction
@@ -89,65 +78,65 @@ public class FishMovement : MonoBehaviour
 
         if (t >= nextRetargetTime) //when hold time is up
         {
-            float x = Mathf.PerlinNoise(seedX, t * changeSpeed) * 2f - 1f; //new x
-            float y = Mathf.PerlinNoise(seedY, t * changeSpeed) * 2f - 1f; //new y
-            Vector2 targetDir = new Vector2(x, y); //new direction
+            Vector2 targetDir = Random.value > 0.5f ? Vector2.right : Vector2.left; ; //new direction
 
-            if (targetDir.sqrMagnitude < 0.0001f) targetDir = move; //safeguard against near 0 targetDir
-
-            heldTargetDir = targetDir.normalized;
+            heldTargetDir = targetDir;
 
             nextRetargetTime = t + minDirectionHold;
         }
 
         Vector2 desiredDir = heldTargetDir.sqrMagnitude > 0.0001f ? heldTargetDir.normalized : move;
 
-        bool chasingFood = false;
-        Vector2 foodDir = Vector2.zero;
-
         if (hunger != null && hunger.Stage != HungerSystem.HungerStage.Full && hunger.FoodSteerDir.sqrMagnitude > 0.0001f)
         {
-            chasingFood = true;
-            foodDir = hunger.FoodSteerDir.normalized;
-            desiredDir = foodDir;
-            heldTargetDir = Vector2.Lerp(heldTargetDir, foodDir, 1f - Mathf.Exp(-12f * Time.fixedDeltaTime));
+            Vector2 foodDir = hunger.FoodSteerDir;
+            foodDir.y = 0f;
+            if (foodDir.sqrMagnitude > 0.0001f)
+                desiredDir = foodDir.normalized;
         }
 
-        if (avoidBoundary != null) avoidBoundary.fallbackMoveDir = desiredDir;
+        if (avoidBoundary != null) avoidBoundary.fallbackMoveDir = desiredDir; //set fallbackMoveDir for avoidance component
 
-        Vector2 avoidDir = (avoidBoundary != null) ? avoidBoundary.ComputeAvoidDirection() : Vector2.zero;
+        //avoid direction
+        Vector2 avoidDir = (avoidBoundary != null) ? avoidBoundary.ComputeAvoidDirection() : Vector2.zero; //reference avoid boundary component for avoid direction
 
-        float edge = Mathf.Clamp01(avoidDir.magnitude);
-        float foodWeight = 1f - edge * edge;
+        avoid = Vector2.Lerp(avoid, avoidDir, 1f - Mathf.Exp(-reactionSpeed * Time.fixedDeltaTime));
 
-        Vector2 steerDir = desiredDir * foodWeight;
-
-        Vector2 combinedDir = steerDir + avoidDir * avoidStrength + bumpSteer * bumpSteerStrength;
-        if (combinedDir.sqrMagnitude < 0.0001f) combinedDir = avoidDir.sqrMagnitude > 0.0001f ? avoidDir.normalized : desiredDir;
+        //actual direction
+        Vector2 combinedDir = desiredDir + avoid * avoidStrength + bumpSteer * bumpSteerStrength;
+        if (combinedDir.sqrMagnitude < 0.0001f)
+            combinedDir = desiredDir;
 
         combinedDir.Normalize();
 
-        float chaseTurn = turnSharpness;
-        if (chasingFood) chaseTurn *= 1.8f;
+        move = Vector2.Lerp(move, combinedDir, 1f - Mathf.Exp(-turnSharpness * Time.fixedDeltaTime)); //smooths out final movement direction
 
-        move = Vector2.Lerp(move, combinedDir, 1f - Mathf.Exp(-chaseTurn * Time.fixedDeltaTime));
+        rb.AddForce(move * moveSpeed * lifeStage.SpeedMultiplier); //actually applies force
 
-        float hungerMult = 1f;
-        if (hunger != null)
-        {
-            if (hunger.Stage == HungerSystem.HungerStage.Hungry) hungerMult = 1.25f;
-            else if (hunger.Stage == HungerSystem.HungerStage.Starving) hungerMult = 1.6f;
-        }
-
-        rb.AddForce(move * moveSpeed * hungerMult * lifeStage.SpeedMultiplier);
+        LockToBottom();
 
         float speed = rb.linearVelocity.magnitude;
         if (speedCap != null && speed > speedCap.maxSpeed)
             rb.linearVelocity = rb.linearVelocity / speed * speedCap.maxSpeed; //keep only direction, then multiply by maxSpeed
     }
+
+    void LockToBottom()
+    {
+        float bottom = avoidBoundary.GetBottom();
+
+        // keep crab on bottom
+        Vector2 p = rb.position;
+        p.y = bottom;
+        rb.position = p;
+
+        // remove vertical drift
+        Vector2 v = rb.linearVelocity;
+        v.y = 0f;
+        rb.linearVelocity = v;
+    }
+
     void OnCollisionEnter2D(Collision2D col)
     {
-        if (lifeStage != null && lifeStage.Stage == LifeCycle.LifeStage.Dead) return;
         if (Time.time - lastBumpTime < bumpCooldown) return;
         if (col.gameObject.layer != gameObject.layer) return;
 
